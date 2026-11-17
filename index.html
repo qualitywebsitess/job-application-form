@@ -92,10 +92,6 @@
   .status { margin-top: 16px; padding: 12px 14px; border-radius: 7px; display: none; }
   .status.ok { display: block; background: #e7f4ea; color: #1b6b2f; }
   .status.err { display: block; background: #fdecea; color: var(--danger); }
-  input[type=file] {
-    width: 100%; padding: 10px; border: 1px dashed var(--line);
-    border-radius: 7px; background: #fbfcfe; font: inherit;
-  }
   @media (max-width: 640px) {
     .grid { grid-template-columns: 1fr; }
     .yn { grid-template-columns: 1fr; }
@@ -108,7 +104,7 @@
 <div class="wrap">
   <header class="page">
     <h1>Job Application Form</h1>
-    <p>Please complete all required fields and attach any relevant documents. Fields marked <span class="req">*</span> are required.</p>
+    <p>Please complete all required fields. Fields marked <span class="req">*</span> are required.</p>
   </header>
 
   <form id="application" novalidate>
@@ -244,18 +240,6 @@
       </fieldset>
     </section>
 
-    <section class="card">
-      <fieldset>
-        <legend><span class="section-title"><span class="num">9</span><h2>Documents</h2></span></legend>
-        <label class="field">
-          <span>Attach relevant documents</span>
-          <input type="file" name="documents" multiple>
-          <span class="hint">You can attach an existing CV, academic certificates, training certificates or other supporting documents. Select multiple files by holding Ctrl/Cmd.</span>
-        </label>
-        <p class="note" style="margin-top:12px">To collect responses online, set <code>SUBMIT_ENDPOINT</code> in this file to a URL that accepts JSON. Otherwise submitting downloads a response file you can send manually.</p>
-      </fieldset>
-    </section>
-
     <div class="card actions">
       <button type="submit" class="btn btn-primary">Submit application</button>
       <button type="reset" class="btn btn-secondary">Clear form</button>
@@ -300,7 +284,8 @@
 </template>
 
 <script>
-  const SUBMIT_ENDPOINT = "";
+  const WEB3FORMS_ACCESS_KEY = "";
+  const SUBMIT_ENDPOINT = "https://api.web3forms.com/submit";
 
   const form = document.getElementById('application');
   const statusEl = document.getElementById('status');
@@ -349,15 +334,20 @@
       .filter(obj => Object.values(obj).some(v => v));
   }
 
-  function readFiles(input) {
-    return Promise.all([...input.files].map(file => new Promise(resolve => {
-      const reader = new FileReader();
-      reader.onload = () => resolve({
-        name: file.name, type: file.type, size: file.size, dataUrl: reader.result
-      });
-      reader.onerror = () => resolve({ name: file.name, error: 'Could not read file' });
-      reader.readAsDataURL(file);
-    })));
+  function flatten(data, prefix = '', out = {}) {
+    Object.entries(data).forEach(([key, value]) => {
+      const label = key.replace(/([A-Z])/g, ' $1').replace(/^./, c => c.toUpperCase()).trim();
+      const path = prefix ? prefix + ' — ' + label : label;
+      if (Array.isArray(value)) {
+        if (value.length === 0) out[path] = '—';
+        else value.forEach((item, i) => flatten(item, path + ' ' + (i + 1), out));
+      } else if (value && typeof value === 'object') {
+        flatten(value, path, out);
+      } else {
+        out[path] = value === '' ? '—' : String(value);
+      }
+    });
+    return out;
   }
 
   function setStatus(message, ok) {
@@ -404,18 +394,24 @@
       volunteer: yesNo('volunteerHas', 'volunteerDetails'),
       languages: val('languages'),
       organisations: yesNo('organisationsHas', 'organisationsDetails'),
-      referees: entries('referees-list'),
-      documents: await readFiles(form.elements['documents'])
+      referees: entries('referees-list')
     };
 
-    if (SUBMIT_ENDPOINT) {
+    if (WEB3FORMS_ACCESS_KEY) {
+      const payload = {
+        access_key: WEB3FORMS_ACCESS_KEY,
+        subject: 'New job application — ' + data.personal.fullName,
+        from_name: 'Job Application Form',
+        ...flatten(data)
+      };
       try {
         const res = await fetch(SUBMIT_ENDPOINT, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(data)
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
         });
-        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const result = await res.json().catch(() => ({}));
+        if (!res.ok || !result.success) throw new Error(result.message || 'HTTP ' + res.status);
         setStatus('Application submitted successfully.', true);
         form.reset();
         return;

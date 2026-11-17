@@ -284,7 +284,7 @@
 </template>
 
 <script>
-  const WEB3FORMS_ACCESS_KEY = "";
+  const WEB3FORMS_ACCESS_KEY = "3afc3c45-9612-414b-93e6-79a0da29b5af";
   const SUBMIT_ENDPOINT = "https://api.web3forms.com/submit";
 
   const form = document.getElementById('application');
@@ -402,6 +402,8 @@
         access_key: WEB3FORMS_ACCESS_KEY,
         subject: 'New job application — ' + data.personal.fullName,
         from_name: 'Job Application Form',
+        email: data.personal.email,
+        replyto: data.personal.email,
         ...flatten(data)
       };
       try {

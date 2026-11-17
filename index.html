@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Job Application Form</title>
+<style>
+  :root {
+    --ink: #1a2233;
+    --muted: #5b6478;
+    --line: #d9dee8;
+    --bg: #eef1f6;
+    --card: #ffffff;
+    --accent: #2453a8;
+    --accent-soft: #eaf0fb;
+    --danger: #b3261e;
+    --radius: 10px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 32px 20px 64px; }
+  header.page {
+    margin-bottom: 24px;
+  }
+  header.page h1 { margin: 0 0 6px; font-size: 1.9rem; letter-spacing: -0.01em; }
+  header.page p { margin: 0; color: var(--muted); }
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px 28px;
+    margin-bottom: 18px;
+  }
+  fieldset { border: 0; margin: 0; padding: 0; }
+  legend { padding: 0; margin-bottom: 16px; }
+  .section-title { display: flex; align-items: center; gap: 10px; }
+  .num {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 0.8rem; font-weight: 700; flex: none;
+  }
+  .section-title h2 { font-size: 1.15rem; margin: 0; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px 18px; }
+  .full { grid-column: 1 / -1; }
+  label.field { display: block; }
+  label.field > span {
+    display: block; font-size: 0.85rem; font-weight: 600;
+    margin-bottom: 6px; color: var(--ink);
+  }
+  .hint { display: block; font-weight: 400; color: var(--muted); font-size: 0.78rem; margin-top: 4px; }
+  .req { color: var(--danger); }
+  input[type=text], input[type=tel], input[type=email], input[type=url], select, textarea {
+    width: 100%; padding: 10px 12px; font: inherit; color: var(--ink);
+    background: #fff; border: 1px solid var(--line); border-radius: 7px;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  textarea { min-height: 92px; resize: vertical; }
+  input:focus, select:focus, textarea:focus {
+    outline: none; border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(36,83,168,.15);
+  }
+  input[aria-invalid=true], select[aria-invalid=true], textarea[aria-invalid=true] {
+    border-color: var(--danger);
+  }
+  .entry {
+    border: 1px solid var(--line); border-radius: 8px;
+    padding: 16px; margin-bottom: 12px; background: #fbfcfe;
+  }
+  .entry-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .entry-head strong { font-size: 0.9rem; }
+  .yn { display: grid; grid-template-columns: 180px 1fr; gap: 14px; align-items: start; }
+  .yn .details[hidden] { display: none; }
+  .btn {
+    font: inherit; font-weight: 600; cursor: pointer;
+    border-radius: 7px; padding: 10px 18px; border: 1px solid transparent;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #1c458f; }
+  .btn-secondary { background: #fff; color: var(--ink); border-color: var(--line); }
+  .btn-secondary:hover { background: #f4f6fa; }
+  .btn-small { padding: 5px 10px; font-size: 0.8rem; }
+  .btn-danger { background: transparent; color: var(--danger); border-color: transparent; }
+  .actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .note { color: var(--muted); font-size: 0.82rem; margin: 0; }
+  .status { margin-top: 16px; padding: 12px 14px; border-radius: 7px; display: none; }
+  .status.ok { display: block; background: #e7f4ea; color: #1b6b2f; }
+  .status.err { display: block; background: #fdecea; color: var(--danger); }
+  input[type=file] {
+    width: 100%; padding: 10px; border: 1px dashed var(--line);
+    border-radius: 7px; background: #fbfcfe; font: inherit;
+  }
+  @media (max-width: 640px) {
+    .grid { grid-template-columns: 1fr; }
+    .yn { grid-template-columns: 1fr; }
+    .card { padding: 20px 18px; }
+    header.page h1 { font-size: 1.6rem; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="page">
+    <h1>Job Application Form</h1>
+    <p>Please complete all required fields and attach any relevant documents. Fields marked <span class="req">*</span> are required.</p>
+  </header>
+
+  <form id="application" novalidate>
+    <section class="card">
+      <fieldset>
+        <legend><span class="section-title"><span class="num">1</span><h2>Personal information</h2></span></legend>
+        <div class="grid">
+          <label class="field"><span>Full name <b class="req">*</b></span><input type="text" name="fullName" autocomplete="name" required></label>
+          <label class="field"><span>Phone number <b class="req">*</b></span><input type="tel" name="phone" autocomplete="tel" required></label>
+          <label class="field"><span>Email address <b class="req">*</b></span><input type="email" name="email" autocomplete="email" required></label>
+          <label class="field"><span>Town or city of residence <b class="req">*</b></span><input type="text" name="city" required></label>
+          <div class="yn full">
+            <label class="field"><span>Do you have a LinkedIn profile?</span>
+              <select name="linkedinHas"><option value="">Select…</option><option>Yes</option><option>No</option></select>
+            </label>
+            <label class="field details"><span>LinkedIn URL <span class="hint">If yes, paste your profile link</span></span><input type="url" name="linkedinUrl" placeholder="https://linkedin.com/in/…"></label>
+          </div>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="card">
+      <fieldset>
+        <legend><span class="section-title"><span class="num">2</span><h2>Professional profile</h2></span></legend>
+        <div class="grid">
+          <label class="field full"><span>Briefly describe yourself and your professional background <b class="req">*</b></span><textarea name="about" required></textarea></label>
+          <label class="field full"><span>What type of job or opportunities are you applying for? <b class="req">*</b></span><input type="text" name="jobType" required></label>
+          <label class="field full"><span>What is your career objective?</span><textarea name="objective"></textarea></label>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="card">
+      <fieldset>
+        <legend><span class="section-title"><span class="num">3</span><h2>Education</h2></span></legend>
+        <p class="note" style="margin-bottom:14px">Add each school, college or university you attended.</p>
+        <div id="education-list">
+          <div class="entry">
+            <div class="entry-head"><strong>Education entry</strong><button type="button" class="btn btn-small btn-danger remove-btn">Remove</button></div>
+            <div class="grid">
+              <label class="field full"><span>School, college or university attended</span><input type="text" name="school"></label>
+              <label class="field full"><span>Qualification obtained or currently pursuing</span><input type="text" name="qualification"></label>
+              <label class="field full"><span>Dates of attendance or completion</span><input type="text" name="eduDates" placeholder="e.g. Sep 2018 – Jun 2022"></label>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-small add-btn" data-list="education-list" data-template="education-tpl">+ Add another education entry</button>
+      </fieldset>
+    </section>
+
+    <section class="card">
+      <fieldset>
+        <legend><span class="section-title"><span class="num">4</span><h2>Employment history</h2></span></legend>
+        <p class="note" style="margin-bottom:14px">Add each position you have held.</p>
+        <div id="employment-list">
+          <div class="entry">
+            <div class="entry-head"><strong>Employment entry</strong><button type="button" class="btn btn-small btn-danger remove-btn">Remove</button></div>
+            <div class="grid">
+              <label class="field full"><span>Where have you previously worked? (employer / organisation)</span><input type="text" name="employer"></label>
+              <label class="field"><span>Position held</span><input type="text" name="position"></label>
+              <label class="field"><span>Employment dates</span><input type="text" name="jobDates" placeholder="e.g. Jan 2020 – Present"></label>
+              <label class="field full"><span>Main duties and responsibilities</span><textarea name="duties"></textarea></label>
+              <label class="field full"><span>Achievements or contributions</span><textarea name="achievements"></textarea></label>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-small add-btn" data-list="employment-list" data-template="employment-tpl">+ Add another position</button>
+      </fieldset>
+    </section>
+
+    <section class="card">
+      <fieldset>
+        <legend><span class="section-title"><span class="num">5</span><h2>Skills</h2></span></legend>
+        <div class="grid">
+          <label class="field full"><span>Technical and computer skills</span><textarea name="technicalSkills" placeholder="e.g. programming languages, software, tools, platforms"></textarea></label>
+          <label class="field full"><span>Other professional or personal skills you would like included</span><textarea name="otherSkills"></textarea></label>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="card">
+      <fieldset>
+        <legend><span class="section-title"><span class="num">6</span><h2>Projects, awards and training</h2></span></legend>
+        <div class="grid">
+          <div class="yn full">
+            <label class="field"><span>Completed any academic or professional projects?</span><select name="projectsHas"><option value="">Select…</option><option>Yes</option><option>No</option></select></label>
+            <label class="field details"><span>Project details <span class="hint">If yes, describe the projects</span></span><textarea name="projectsDetails"></textarea></label>
+          </div>
+          <div class="yn full">
+            <label class="field"><span>Received any awards or recognitions?</span><select name="awardsHas"><option value="">Select…</option><option>Yes</option><option>No</option></select></label>
+            <label class="field details"><span>Award details <span class="hint">If yes, list them</span></span><textarea name="awardsDetails"></textarea></label>
+          </div>
+          <div class="yn full">
+            <label class="field"><span>Attended professional training or obtained certifications?</span><select name="trainingHas"><option value="">Select…</option><option>Yes</option><option>No</option></select></label>
+            <label class="field details"><span>Training / certification details <span class="hint">If yes, list courses and dates</span></span><textarea name="trainingDetails"></textarea></label>
+          </div>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="card">
+      <fieldset>
+        <legend><span class="section-title"><span class="num">7</span><h2>Additional information</h2></span></legend>
+        <div class="grid">
+          <div class="yn full">
+            <label class="field"><span>Participated in any volunteer work?</span><select name="volunteerHas"><option value="">Select…</option><option>Yes</option><option>No</option></select></label>
+            <label class="field details"><span>Volunteer details <span class="hint">If yes, describe your involvement</span></span><textarea name="volunteerDetails"></textarea></label>
+          </div>
+          <label class="field full"><span>Which languages do you speak? <span class="hint">Include proficiency level if useful</span></span><input type="text" name="languages"></label>
+          <div class="yn full">
+            <label class="field"><span>Member of any professional organisations?</span><select name="organisationsHas"><option value="">Select…</option><option>Yes</option><option>No</option></select></label>
+            <label class="field details"><span>Organisation details <span class="hint">If yes, list them</span></span><textarea name="organisationsDetails"></textarea></label>
+          </div>
+        </div>
+      </fieldset>
+    </section>
+
+    <section class="card">
+      <fieldset>
+        <legend><span class="section-title"><span class="num">8</span><h2>Referees</h2></span></legend>
+        <p class="note" style="margin-bottom:14px">Provide details of referees if available (name, position and contact details).</p>
+        <div id="referees-list">
+          <div class="entry">
+            <div class="entry-head"><strong>Referee</strong><button type="button" class="btn btn-small btn-danger remove-btn">Remove</button></div>
+            <div class="grid">
+              <label class="field"><span>Name</span><input type="text" name="refereeName"></label>
+              <label class="field"><span>Position</span><input type="text" name="refereePosition"></label>
+              <label class="field full"><span>Contact details (email / phone)</span><input type="text" name="refereeContact"></label>
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-secondary btn-small add-btn" data-list="referees-list" data-template="referees-tpl">+ Add another referee</button>
+      </fieldset>
+    </section>
+
+    <section class="card">
+      <fieldset>
+        <legend><span class="section-title"><span class="num">9</span><h2>Documents</h2></span></legend>
+        <label class="field">
+          <span>Attach relevant documents</span>
+          <input type="file" name="documents" multiple>
+          <span class="hint">You can attach an existing CV, academic certificates, training certificates or other supporting documents. Select multiple files by holding Ctrl/Cmd.</span>
+        </label>
+        <p class="note" style="margin-top:12px">To collect responses online, set <code>SUBMIT_ENDPOINT</code> in this file to a URL that accepts JSON. Otherwise submitting downloads a response file you can send manually.</p>
+      </fieldset>
+    </section>
+
+    <div class="card actions">
+      <button type="submit" class="btn btn-primary">Submit application</button>
+      <button type="reset" class="btn btn-secondary">Clear form</button>
+      <div id="status" class="status" role="status" aria-live="polite"></div>
+    </div>
+  </form>
+</div>
+
+<template id="education-tpl">
+  <div class="entry">
+    <div class="entry-head"><strong>Education entry</strong><button type="button" class="btn btn-small btn-danger remove-btn">Remove</button></div>
+    <div class="grid">
+      <label class="field full"><span>School, college or university attended</span><input type="text" name="school"></label>
+      <label class="field full"><span>Qualification obtained or currently pursuing</span><input type="text" name="qualification"></label>
+      <label class="field full"><span>Dates of attendance or completion</span><input type="text" name="eduDates" placeholder="e.g. Sep 2018 – Jun 2022"></label>
+    </div>
+  </div>
+</template>
+
+<template id="employment-tpl">
+  <div class="entry">
+    <div class="entry-head"><strong>Employment entry</strong><button type="button" class="btn btn-small btn-danger remove-btn">Remove</button></div>
+    <div class="grid">
+      <label class="field full"><span>Where have you previously worked? (employer / organisation)</span><input type="text" name="employer"></label>
+      <label class="field"><span>Position held</span><input type="text" name="position"></label>
+      <label class="field"><span>Employment dates</span><input type="text" name="jobDates" placeholder="e.g. Jan 2020 – Present"></label>
+      <label class="field full"><span>Main duties and responsibilities</span><textarea name="duties"></textarea></label>
+      <label class="field full"><span>Achievements or contributions</span><textarea name="achievements"></textarea></label>
+    </div>
+  </div>
+</template>
+
+<template id="referees-tpl">
+  <div class="entry">
+    <div class="entry-head"><strong>Referee</strong><button type="button" class="btn btn-small btn-danger remove-btn">Remove</button></div>
+    <div class="grid">
+      <label class="field"><span>Name</span><input type="text" name="refereeName"></label>
+      <label class="field"><span>Position</span><input type="text" name="refereePosition"></label>
+      <label class="field full"><span>Contact details (email / phone)</span><input type="text" name="refereeContact"></label>
+    </div>
+  </div>
+</template>
+
+<script>
+  const SUBMIT_ENDPOINT = "";
+
+  const form = document.getElementById('application');
+  const statusEl = document.getElementById('status');
+
+  document.addEventListener('click', (e) => {
+    const add = e.target.closest('.add-btn');
+    if (add) {
+      const list = document.getElementById(add.dataset.list);
+      const tpl = document.getElementById(add.dataset.template);
+      list.appendChild(tpl.content.cloneNode(true));
+      return;
+    }
+    const remove = e.target.closest('.remove-btn');
+    if (remove) {
+      const entry = remove.closest('.entry');
+      const list = entry.parentElement;
+      if (list.querySelectorAll('.entry').length > 1) entry.remove();
+      else entry.querySelectorAll('input, textarea, select').forEach(el => el.value = '');
+    }
+  });
+
+  document.addEventListener('change', (e) => {
+    const yn = e.target.closest('.yn');
+    if (!yn || e.target.tagName !== 'SELECT') return;
+    const details = yn.querySelector('.details');
+    if (details) details.hidden = e.target.value !== 'Yes';
+  });
+
+  function val(name) {
+    const el = form.elements[name];
+    return el ? String(el.value).trim() : '';
+  }
+
+  function yesNo(key, detailsKey) {
+    const has = val(key);
+    return { answer: has, details: has === 'Yes' ? val(detailsKey) : '' };
+  }
+
+  function entries(listId) {
+    return [...document.getElementById(listId).querySelectorAll('.entry')]
+      .map(entry => {
+        const obj = {};
+        entry.querySelectorAll('[name]').forEach(el => { obj[el.name] = String(el.value).trim(); });
+        return obj;
+      })
+      .filter(obj => Object.values(obj).some(v => v));
+  }
+
+  function readFiles(input) {
+    return Promise.all([...input.files].map(file => new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onload = () => resolve({
+        name: file.name, type: file.type, size: file.size, dataUrl: reader.result
+      });
+      reader.onerror = () => resolve({ name: file.name, error: 'Could not read file' });
+      reader.readAsDataURL(file);
+    })));
+  }
+
+  function setStatus(message, ok) {
+    statusEl.textContent = message;
+    statusEl.className = 'status ' + (ok ? 'ok' : 'err');
+  }
+
+  function download(data) {
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'application-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const invalid = [...form.querySelectorAll('[required]')].find(el => !String(el.value).trim());
+    if (invalid) {
+      invalid.focus();
+      invalid.setAttribute('aria-invalid', 'true');
+      setStatus('Please complete all required fields.', false);
+      return;
+    }
+    form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
+
+    const data = {
+      submittedAt: new Date().toISOString(),
+      personal: {
+        fullName: val('fullName'), phone: val('phone'), email: val('email'),
+        city: val('city'), linkedIn: { has: val('linkedinHas'), url: val('linkedinUrl') }
+      },
+      profile: { about: val('about'), jobType: val('jobType'), objective: val('objective') },
+      education: entries('education-list'),
+      employment: entries('employment-list'),
+      skills: { technical: val('technicalSkills'), other: val('otherSkills') },
+      projects: yesNo('projectsHas', 'projectsDetails'),
+      awards: yesNo('awardsHas', 'awardsDetails'),
+      training: yesNo('trainingHas', 'trainingDetails'),
+      volunteer: yesNo('volunteerHas', 'volunteerDetails'),
+      languages: val('languages'),
+      organisations: yesNo('organisationsHas', 'organisationsDetails'),
+      referees: entries('referees-list'),
+      documents: await readFiles(form.elements['documents'])
+    };
+
+    if (SUBMIT_ENDPOINT) {
+      try {
+        const res = await fetch(SUBMIT_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        setStatus('Application submitted successfully.', true);
+        form.reset();
+        return;
+      } catch (err) {
+        setStatus('Submission failed (' + err.message + '). Downloading your response instead.', false);
+      }
+    }
+
+    download(data);
+    setStatus('Your application has been saved as a downloadable file. Send that file to the employer.', true);
+    form.reset();
+  });
+</script>
+</body>
+</html>
